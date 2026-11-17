@@ -1,60 +1,97 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="ru">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Учебная проверка безопасности</title>
-  <style>
-    * { box-sizing: border-box; }
-    body {
-      margin: 0; min-height: 100vh; display: grid; place-items: center;
-      padding: 24px; background: #f2f4f7; color: #202733;
-      font: 16px/1.5 Arial, sans-serif;
-    }
-    main {
-      width: min(100%, 480px); background: white; padding: 28px;
-      border: 1px solid #e1e5eb; border-radius: 16px;
-      box-shadow: 0 8px 28px #15223812;
-    }
-    .tag { color: #8a5200; background: #fff3d6; padding: 5px 10px;
-      border-radius: 20px; font-size: 12px; font-weight: bold; }
-    h1 { font-size: 25px; line-height: 1.2; margin: 18px 0 12px; }
-    p { color: #536071; }
-    button {
-      width: 100%; border: 0; border-radius: 10px; padding: 14px 18px;
-      background: #2457d6; color: white; font-size: 16px;
-      font-weight: bold; cursor: pointer; margin-top: 12px;
-    }
-    button:hover { background: #1946b5; }
-    .small { font-size: 12px; color: #7b8491; margin-top: 18px; }
-    #result { display: none; margin-top: 20px; padding: 18px;
-      border-radius: 12px; background: #eef8f0; }
-    #result h2 { margin: 0 0 8px; color: #176b35; }
-  </style>
-</head>
-<body>
-<main>
-  <span class="tag">Учебная демонстрация</span>
-  <h1>Проверка безопасности аккаунта</h1>
-  <p>Нажмите кнопку, чтобы завершить учебную проверку.</p>
-  <button id="check">Проверить</button>
-  <section id="result" aria-live="polite">
-    <h2>Спасибо!</h2>
-    <p><strong>Благодарю за статистику от Шамиля ❤️</strong></p>
-    <p>Это была учебная демонстрация фишинга. Никакие пароли, данные карт,
-       IP-адреса или сведения об устройстве не собирались.</p>
-  </section>
-  <p class="small">Не вводите на учебных страницах настоящие пароли,
-    коды подтверждения или платёжные данные.</p>
-</main>
-<script>
-  const button = document.getElementById('check');
-  const result = document.getElementById('result');
-  button.addEventListener('click', () => {
-    button.disabled = true;
-    button.textContent = 'Проверка завершена';
-    result.style.display = 'block';
-  });
-</script>
-</body>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Проверка безопасности аккаунта</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <style>
+      body {
+        font-family: system-ui, -apple-system, sans-serif;
+        background: #f0f2f5;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        min-height: 90vh;
+        margin: 0;
+      }
+      .card {
+        background: #fff;
+        padding: 2rem;
+        border-radius: 12px;
+        box-shadow: 0 2px 12px rgba(0, 0, 0, 0.1);
+        max-width: 420px;
+        text-align: center;
+      }
+      button {
+        padding: 0.75rem 2rem;
+        font-size: 1rem;
+        cursor: pointer;
+        border: none;
+        border-radius: 8px;
+        background: #2563eb;
+        color: #fff;
+      }
+      button:hover { background: #1d4ed8; }
+      #result { margin-top: 1rem; font-weight: bold; }
+      .notice {
+        margin-top: 1.5rem;
+        font-size: 0.8rem;
+        color: #666;
+        text-align: left;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>Проверка безопасности аккаунта</h1>
+      <p>Ваш аккаунт требует дополнительной проверки безопасности.</p>
+      <button id="check-btn">Проверить</button>
+      <p id="result"></p>
+
+      <div class="notice">
+        ℹ️ Это учебная демонстрация фишинговой страницы для доклада о мошенничестве.
+        Никакие личные данные не собираются: фиксируется только обезличенная
+        статистика — количество открытий страницы и нажатий на кнопку.
+      </div>
+    </div>
+
+    <script>
+      const SUPABASE_URL = 'https://hczktrehwxufbidacgpq.supabase.co';
+      const SUPABASE_KEY = 'sb_publishable_NfHUJ7LhoDvT-_GCZKzd8w_eZtSXv80';
+
+      const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+      // UUID посетителя: один раз создаётся и хранится в localStorage.
+      // Повторное открытие страницы тем же браузером не добавит нового посетителя.
+      function getVisitorId() {
+        let id = localStorage.getItem('demo_visitor_id');
+        if (!id) {
+          id = crypto.randomUUID();
+          localStorage.setItem('demo_visitor_id', id);
+        }
+        return id;
+      }
+
+      async function trackEvent(event) {
+        try {
+          await supabase.rpc('track_demo', {
+            p_visitor_id: getVisitorId(),
+            p_event: event
+          });
+        } catch (e) {
+          console.error('Ошибка отправки события:', e);
+        }
+      }
+
+      // Фиксируем открытие страницы
+      trackEvent('open');
+
+      document.getElementById('check-btn').addEventListener('click', async () => {
+        await trackEvent('click');
+        document.getElementById('result').textContent =
+          'Благодарю за статистику от Шамиля ❤️';
+      });
+    </script>
+  </body>
 </html>
