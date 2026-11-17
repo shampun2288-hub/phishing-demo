@@ -60,7 +60,7 @@
       const SUPABASE_URL = 'https://hczktrehwxufbidacgpq.supabase.co';
       const SUPABASE_KEY = 'sb_publishable_NfHUJ7LhoDvT-_GCZKzd8w_eZtSXv80';
 
-      const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+      const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
       // UUID посетителя: один раз создаётся и хранится в localStorage.
       // Повторное открытие страницы тем же браузером не добавит нового посетителя.
@@ -75,7 +75,7 @@
 
       async function trackEvent(event) {
         try {
-          await supabase.rpc('track_demo', {
+          await sb.rpc('track_demo', {
             p_visitor_id: getVisitorId(),
             p_event: event
           });
@@ -84,14 +84,16 @@
         }
       }
 
-      // Фиксируем открытие страницы
-      trackEvent('open');
-
+      // Обработчик кнопки вешаем сразу, чтобы демо работало
+      // даже если статистика по какой-то причине недоступна
       document.getElementById('check-btn').addEventListener('click', async () => {
-        await trackEvent('click');
         document.getElementById('result').textContent =
           'Благодарю за статистику от Шамиля ❤️';
+        await trackEvent('click');
       });
+
+      // Фиксируем открытие страницы
+      trackEvent('open');
     </script>
   </body>
 </html>
