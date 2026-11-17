@@ -1,0 +1,60 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Учебная проверка безопасности</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; min-height: 100vh; display: grid; place-items: center;
+      padding: 24px; background: #f2f4f7; color: #202733;
+      font: 16px/1.5 Arial, sans-serif;
+    }
+    main {
+      width: min(100%, 480px); background: white; padding: 28px;
+      border: 1px solid #e1e5eb; border-radius: 16px;
+      box-shadow: 0 8px 28px #15223812;
+    }
+    .tag { color: #8a5200; background: #fff3d6; padding: 5px 10px;
+      border-radius: 20px; font-size: 12px; font-weight: bold; }
+    h1 { font-size: 25px; line-height: 1.2; margin: 18px 0 12px; }
+    p { color: #536071; }
+    button {
+      width: 100%; border: 0; border-radius: 10px; padding: 14px 18px;
+      background: #2457d6; color: white; font-size: 16px;
+      font-weight: bold; cursor: pointer; margin-top: 12px;
+    }
+    button:hover { background: #1946b5; }
+    .small { font-size: 12px; color: #7b8491; margin-top: 18px; }
+    #result { display: none; margin-top: 20px; padding: 18px;
+      border-radius: 12px; background: #eef8f0; }
+    #result h2 { margin: 0 0 8px; color: #176b35; }
+  </style>
+</head>
+<body>
+<main>
+  <span class="tag">Учебная демонстрация</span>
+  <h1>Проверка безопасности аккаунта</h1>
+  <p>Нажмите кнопку, чтобы завершить учебную проверку.</p>
+  <button id="check">Проверить</button>
+  <section id="result" aria-live="polite">
+    <h2>Спасибо!</h2>
+    <p><strong>Благодарю за статистику от Шамиля ❤️</strong></p>
+    <p>Это была учебная демонстрация фишинга. Никакие пароли, данные карт,
+       IP-адреса или сведения об устройстве не собирались.</p>
+  </section>
+  <p class="small">Не вводите на учебных страницах настоящие пароли,
+    коды подтверждения или платёжные данные.</p>
+</main>
+<script>
+  const button = document.getElementById('check');
+  const result = document.getElementById('result');
+  button.addEventListener('click', () => {
+    button.disabled = true;
+    button.textContent = 'Проверка завершена';
+    result.style.display = 'block';
+  });
+</script>
+</body>
+</html>
